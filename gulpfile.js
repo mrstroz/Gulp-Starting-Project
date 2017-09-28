@@ -4,6 +4,9 @@ var path = require('path');
 var gulp = require('gulp');
 var del = require('del');
 var runSequence = require('run-sequence');
+var merge = require('merge-stream');
+var sass = require('gulp-ruby-sass');
+var cleanCSS = require('gulp-clean-css');
 var gulpLoadPlugins = require('gulp-load-plugins');
 
 var $ = gulpLoadPlugins();
@@ -17,47 +20,54 @@ gulp.task('images', function () {
         .pipe(gulp.dest('dist/img'))
         .pipe($.size({title: 'img'}))
 });
+
 gulp.task('copy', function () {
     return gulp.src([
-        'app/*',
-        '!app/*.html',
-        'node_modules/apache-server-configs/dist/.htaccess'
-    ], {
-        dot: true
-    }).pipe(gulp.dest('dist'))
-               .pipe($.size({title: 'copy'}))
+        'app/**/*',
+        '!app/css/',
+        '!app/css/**/*',
+        '!app/js/',
+        '!app/js/**/*',
+        '!app/img/',
+        '!app/img/**/*',
+        '!app/sass/',
+        '!app/sass/**/*'
+
+    ]).pipe(gulp.dest('dist'));
 });
+
+
 gulp.task('styles', function () {
-    var AUTOPREFIXER_BROWSERS = [
-        'ie >= 10',
-        'ie_mob >= 10',
-        'ff >= 30',
-        'chrome >= 34',
-        'safari >= 7',
-        'opera >= 23',
-        'ios >= 7',
-        'android >= 4.4',
-        'bb >= 10'
+    var sassStream,
+        cssStream;
+
+    cssStream = [
+        'app/css/normalize.css'
     ];
 
-    return gulp.src([
-        'app/sass/main.scss',
-        'app/css/**/*.css'
-    ])
-               .pipe($.newer('.tmp/styles'))
-               .pipe($.sourcemaps.init())
-               .pipe($.sass({
-                   precision: 10
-               }).on('error', $.sass.logError))
-               .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
-               .pipe(gulp.dest('.tmp/styles'))
-               // Concatenate and minify styles
-               .pipe($.if('*.css', $.cssnano()))
-               .pipe($.size({title: 'styles'}))
-               .pipe($.sourcemaps.write('./'))
-               .pipe(gulp.dest('dist/css'))
-               .pipe(gulp.dest('.tmp/styles'));
+    sassStream = sass("app/sass/main.scss", {
+        style: 'compressed',
+        loadPath: './node_modules/bootstrap-sass/assets/stylesheets/'
+    });
+
+    return merge(sassStream, gulp.src(cssStream))
+        .pipe($.concat('main.css'))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(gulp.dest('dist/css'));
 });
+gulp.task('scripts', function () {
+    return gulp.src([
+        './app/js/jquery-1.12.0.min.js',
+        './app/js/main.js'
+    ])
+               .pipe($.concat('main.min.js'))
+               .pipe($.uglify({preserveComments: 'some'}))
+               .pipe($.size({title: 'scripts'}))
+               .pipe(gulp.dest('dist/js'))
+               .pipe(gulp.dest('.tmp/scripts'))
+});
+
+
 gulp.task('scripts', function () {
     return gulp.src([
         './app/js/jquery-1.12.0.min.js',
