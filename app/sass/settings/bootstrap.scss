@@ -1,0 +1,23 @@
+//** Number of columns in the grid.
+$grid-columns: 16 !default;
+//** Padding between columns. Gets divided in half for the left and right.
+$grid-gutter-width: 20px !default;
+
+
+
+// Large screen / wide desktop
+$container-large-desktop: (1200px) !default;
+
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+@import "bootstrap/grid";
+
+
+@media (max-width: 991px) {
+  div[class^="col"] { padding-left: 20px; padding-right: 20px; }
+}
+
+
+@media (min-width: 992px) {
+  div[class^="col"] { padding-left: 10px; padding-right: 10px; }
+}
