@@ -8,8 +8,8 @@ var merge = require('merge-stream');
 var sass = require('gulp-ruby-sass');
 var cleanCSS = require('gulp-clean-css');
 var gulpLoadPlugins = require('gulp-load-plugins');
-
 var $ = gulpLoadPlugins();
+
 
 gulp.task('images', function () {
    return gulp.src('app/img/**/*')
@@ -68,25 +68,14 @@ gulp.task('scripts', function () {
 });
 
 
-gulp.task('scripts', function () {
-    return gulp.src([
-        './app/js/jquery-1.12.0.min.js',
-        './app/js/main.js'
-    ])
-               .pipe($.concat('main.min.js'))
-               .pipe($.uglify({preserveComments: 'some'}))
-               .pipe($.size({title: 'scripts'}))
-               .pipe(gulp.dest('dist/js'))
-               .pipe(gulp.dest('.tmp/scripts'))
-});
 gulp.task('clean', function () {
-    return del(['.tmp', 'dist/*', '!dist/.git'], {dot: true})
+    return del(['.tmp', 'dist/*'], {dot: true})
 });
 
 
 gulp.task('serve', ['scripts', 'styles'], function () {
     gulp.watch(['app/sass/**/*'], ['styles']);
-    gulp.watch(['app/scripts/**/*.js'], ['scripts']);
+    gulp.watch(['app/js/**/*.js'], ['scripts']);
     gulp.watch(['app/img/**/*'], ['images']);
 });
 
