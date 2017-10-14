@@ -1,4 +1,14 @@
-@import "settings/variables";
-@import "settings/mixins";
-@import "settings/settings";
-@import "settings/bootstrap";
+@import "base/bootstrap";
+@import "base/varibles";
+@import "base/mixins";
+@import "base/colors";
+@import "base/settings";
+@import "base/animations";
+@import "base/fonts";
+
+/* COMPONENTS */
+@import "components/nav";
+@import "components/header";
+@import "components/footer";
+
+/* PAGES */
