@@ -79,6 +79,10 @@ gulp.task('serve', ['scripts', 'styles'], function () {
     gulp.watch(['app/img/**/*'], ['images']);
 });
 
+gulp.task('build:cms', function () {
+    return gulp.src(['dist/**/*', '!dist/partials','!dist/partials/*', '!dist/*.php'])
+        .pipe(gulp.dest('../public/html'));
+});
 
 gulp.task('default', ['clean'], function (cb) {
     runSequence(
