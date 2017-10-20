@@ -76,6 +76,7 @@ gulp.task('clean', function () {
 gulp.task('serve', ['scripts', 'styles'], function () {
     gulp.watch(['app/sass/**/*'], ['styles']);
     gulp.watch(['app/js/**/*.js'], ['scripts']);
+       gulp.watch(['app/**/*.php'], ['copy']);
     gulp.watch(['app/img/**/*'], ['images']);
 });
 
