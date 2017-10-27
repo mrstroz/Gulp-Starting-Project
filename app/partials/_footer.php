@@ -2,4 +2,4 @@
 
 </footer>
 
-<script src="js/script.min.js"></script>
+<script src="js/main.min.js"></script>
