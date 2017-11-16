@@ -74,9 +74,17 @@ gulp.task('clean', function () {
 
 
 gulp.task('serve', ['scripts', 'styles'], function () {
+    gulp.watch(['app/**/*',
+        '!app/css/',
+        '!app/css/**/*',
+        '!app/js/',
+        '!app/js/**/*',
+        '!app/img/',
+        '!app/img/**/*',
+        '!app/sass/',
+        '!app/sass/**/*'], ['copy']);
     gulp.watch(['app/sass/**/*'], ['styles']);
     gulp.watch(['app/js/**/*.js'], ['scripts']);
-       gulp.watch(['app/**/*.php'], ['copy']);
     gulp.watch(['app/img/**/*'], ['images']);
 });
 
