@@ -1,19 +1,28 @@
-*, *:before, *:after {
-  box-sizing: inherit;
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: auto;
 }
 
 html {
-  box-sizing: border-box;
+  color: #FFFFFF;
+  font-weight: 400;
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
 }
 
 html,
 body {
   min-height: 100%;
   width: 100%;
-  color: #FFFFFF;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 
