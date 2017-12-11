@@ -1,8 +1,8 @@
 var App = function () {
 
-    function test () {
-
-    }
+    const test = () => {
+        console.log(test);
+    };
 
     function init () {
         test();
@@ -13,11 +13,6 @@ var App = function () {
     }
 }();
 
-$(document).ready(function () {
-   App.init();
+document.addEventListener('DOMContentLoaded', function() {
+    App.init();
 });
-
-$(window).on('load', function () {
-
-});
-
