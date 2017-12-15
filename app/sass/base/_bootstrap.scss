@@ -11,13 +11,15 @@ $container-large-desktop: (1200px) !default;
 @import "bootstrap/variables";
 @import "bootstrap/mixins";
 @import "bootstrap/grid";
+@import "bootstrap/normalize";
+@import "bootstrap/scaffolding";
 
 
-@media (max-width: 991px) {
-  div[class^="col"] { padding-left: 20px; padding-right: 20px; }
-}
+// @media (max-width: 991px) {
+//  div[class^="col"] { padding-left: 20px; padding-right: 20px; }
+// }
 
 
-@media (min-width: 992px) {
-  div[class^="col"] { padding-left: 10px; padding-right: 10px; }
-}
+// @media (min-width: 992px) {
+//  div[class^="col"] { padding-left: 10px; padding-right: 10px; }
+// }
