@@ -8,84 +8,94 @@ var merge = require('merge-stream');
 var sass = require('gulp-ruby-sass');
 var cleanCSS = require('gulp-clean-css');
 var gulpLoadPlugins = require('gulp-load-plugins');
-var $ = gulpLoadPlugins();
+var cache = require('gulp-cache');
+var imagemin = require('gulp-imagemin');
+var size = require('gulp-size');
+var sourcemaps = require('gulp-sourcemaps');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var php  = require('gulp-connect-php');
+var browserSync = require('browser-sync');
 
+var config = {
+   input: './app/',
+   output: './dist/',
+   jsInputs: [
+    './app/js/jquery-1.12.0.min.js',
+    './app/js/main.js'
+   ],
+   bootstrapImportPath: './node_modules/bootstrap-sass/assets/stylesheets/',
+   fileToCopy: [
+    './app/partials/*',
+    './app/*.php'
+   ]
+}
+
+var reload  = browserSync.reload;
+
+gulp.task('php', function() {
+    php.server({ base: 'dist', port: 8010, keepalive: true});
+});
+
+gulp.task('browser-sync',['php'], function() {
+    browserSync({
+        proxy: '127.0.0.1:8010',
+        port: 8080,
+        open: true,
+        notify: false
+    });
+});
 
 gulp.task('images', function () {
-   return gulp.src('app/img/**/*')
-        .pipe($.cache($.imagemin({
+   return gulp.src(config.input + '/img/**/*')
+        .pipe(cache(imagemin({
             progressive: true,
             interlaced: true
         })))
-        .pipe(gulp.dest('dist/img'))
-        .pipe($.size({title: 'img'}))
-});
-
-gulp.task('copy', function () {
-    return gulp.src([
-        'app/**/*',
-        '!app/css/',
-        '!app/css/**/*',
-        '!app/js/',
-        '!app/js/**/*',
-        '!app/img/',
-        '!app/img/**/*',
-        '!app/sass/',
-        '!app/sass/**/*'
-
-    ]).pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(config.output + 'img'))
+        .pipe(size({title: 'img'}))
 });
 
 
-gulp.task('styles', function () {
-    var sassStream,
-        cssStream;
-
-    cssStream = [
-        'app/css/normalize.css'
-    ];
-
-    sassStream = sass("app/sass/main.scss", {
-        style: 'compressed',
-        loadPath: './node_modules/bootstrap-sass/assets/stylesheets/'
-    });
-
-    return merge(sassStream, gulp.src(cssStream))
-        .pipe($.concat('main.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(gulp.dest('dist/css'));
+gulp.task('styles', function() {
+    return sass(config.input + 'sass/main.scss', {
+            sourcemap: true,
+            style: 'compressed',
+            loadPath: [
+                config.bootstrapImportPath,
+            ]
+        })
+		.on('error', sass.logError)
+		.pipe(sourcemaps.write())
+		.pipe(sourcemaps.write('maps', {
+			includeContent: false,
+			sourceRoot: 'source'
+		}))
+		.pipe(gulp.dest(config.output + 'css'))
 });
+
+
 gulp.task('scripts', function () {
-    return gulp.src([
-        './app/js/jquery-1.12.0.min.js',
-        './app/js/main.js'
-    ])
-               .pipe($.concat('main.min.js'))
-               .pipe($.uglify({preserveComments: 'some'}))
-               .pipe($.size({title: 'scripts'}))
-               .pipe(gulp.dest('dist/js'))
-               .pipe(gulp.dest('.tmp/scripts'))
+    return gulp.src(
+        config.jsInputs
+    )
+               .pipe(concat('main.min.js'))
+               .pipe(uglify({preserveComments: 'some'}))
+               .pipe(size({title: 'scripts'}))
+               .pipe(gulp.dest(config.output + 'js'));
 });
 
 
 gulp.task('clean', function () {
-    return del(['.tmp', 'dist/*'], {dot: true})
+    return del(['dist'], {dot: true})
 });
 
 
-gulp.task('serve', ['scripts', 'styles'], function () {
-    gulp.watch(['app/**/*',
-        '!app/css/',
-        '!app/css/**/*',
-        '!app/js/',
-        '!app/js/**/*',
-        '!app/img/',
-        '!app/img/**/*',
-        '!app/sass/',
-        '!app/sass/**/*'], ['copy']);
-    gulp.watch(['app/sass/**/*'], ['styles']);
-    gulp.watch(['app/js/**/*.js'], ['scripts']);
-    gulp.watch(['app/img/**/*'], ['images']);
+gulp.task('serve', ['scripts', 'styles', 'browser-sync'], function () {
+    gulp.watch([config.input + 'sass/**/*'], ['styles']);
+    gulp.watch([config.input + 'js/**/*.js'], ['scripts']);
+    gulp.watch([config.input + 'mg/**/*'], ['images']);
+    gulp.watch(config.fileToCopy, [reload]);
 });
 
 gulp.task('build:cms', function () {
@@ -96,7 +106,7 @@ gulp.task('build:cms', function () {
 gulp.task('default', ['clean'], function (cb) {
     runSequence(
         'styles',
-        ['scripts', 'images', 'copy'],
+        ['scripts', 'images'],
         cb
     )
 });

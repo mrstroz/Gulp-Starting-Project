@@ -8,11 +8,11 @@ $grid-gutter-width: 20px !default;
 // Large screen / wide desktop
 $container-large-desktop: (1200px) !default;
 
-@import "bootstrap/variables";
-@import "bootstrap/mixins";
-@import "bootstrap/grid";
-@import "bootstrap/normalize";
-@import "bootstrap/scaffolding";
+@import "bootstrap/_variables";
+@import "bootstrap/_mixins";
+@import "bootstrap/_grid";
+@import "bootstrap/_normalize";
+@import "bootstrap/_scaffolding";
 
 
 // @media (max-width: 991px) {
