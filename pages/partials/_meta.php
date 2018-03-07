@@ -9,5 +9,5 @@
 
     <!-- Place favicon.ico in the root directory -->
 
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="../dist/css/main.css">
 </head>

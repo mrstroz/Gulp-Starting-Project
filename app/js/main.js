@@ -1,7 +1,6 @@
 var App = function () {
 
     function test () {
-
     }
 
     function init () {

@@ -6,8 +6,6 @@ var del = require('del');
 var runSequence = require('run-sequence');
 var merge = require('merge-stream');
 var sass = require('gulp-ruby-sass');
-var cleanCSS = require('gulp-clean-css');
-var gulpLoadPlugins = require('gulp-load-plugins');
 var cache = require('gulp-cache');
 var imagemin = require('gulp-imagemin');
 var size = require('gulp-size');
@@ -24,17 +22,13 @@ var config = {
     './app/js/jquery-1.12.0.min.js',
     './app/js/main.js'
    ],
-   bootstrapImportPath: './node_modules/bootstrap-sass/assets/stylesheets/',
-   fileToCopy: [
-    './app/partials/*',
-    './app/*.php'
-   ]
-}
+   bootstrapImportPath: './node_modules/bootstrap-sass/assets/stylesheets/'
+};
 
 var reload  = browserSync.reload;
 
 gulp.task('php', function() {
-    php.server({ base: 'dist', port: 8010, keepalive: true});
+    php.server({ base: path.resolve(), port: 8010, keepalive: true});
 });
 
 gulp.task('browser-sync',['php'], function() {
@@ -56,13 +50,12 @@ gulp.task('images', function () {
         .pipe(size({title: 'img'}))
 });
 
-
 gulp.task('styles', function() {
     return sass(config.input + 'sass/main.scss', {
             sourcemap: true,
             style: 'compressed',
             loadPath: [
-                config.bootstrapImportPath,
+                config.bootstrapImportPath
             ]
         })
 		.on('error', sass.logError)
@@ -74,7 +67,6 @@ gulp.task('styles', function() {
 		.pipe(gulp.dest(config.output + 'css'))
 });
 
-
 gulp.task('scripts', function () {
     return gulp.src(
         config.jsInputs
@@ -85,21 +77,21 @@ gulp.task('scripts', function () {
                .pipe(gulp.dest(config.output + 'js'));
 });
 
-
 gulp.task('clean', function () {
     return del(['dist'], {dot: true})
 });
 
-
-gulp.task('serve', ['scripts', 'styles', 'browser-sync'], function () {
-    gulp.watch([config.input + 'sass/**/*'], ['styles']);
-    gulp.watch([config.input + 'js/**/*.js'], ['scripts']);
-    gulp.watch([config.input + 'mg/**/*'], ['images']);
-    gulp.watch(config.fileToCopy, [reload]);
+gulp.task('serve', ['scripts', 'styles', 'images', 'browser-sync'], function () {
+    gulp.watch([config.input + 'sass/**/*'], ['styles', reload]);
+    gulp.watch([config.input + 'js/**/*.js'], ['scripts', reload]);
+    gulp.watch('img/**/*', { cwd: './app' }, ['images', reload]);
+    gulp.watch('**/*.php').on('change', function () {
+        browserSync.reload();
+    });
 });
 
 gulp.task('build:cms', function () {
-    return gulp.src(['dist/**/*', '!dist/partials','!dist/partials/*', '!dist/*.php'])
+    return gulp.src(['dist/**/*'])
         .pipe(gulp.dest('../public/html'));
 });
 
